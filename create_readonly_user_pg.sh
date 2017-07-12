@@ -15,13 +15,16 @@ usage() {
 			   -d   Database name
 		   -r   Role name
 		   -s   Schema (defaults to public)
+		   -w   password (defaults to changeme)
 
 		EXAMPLE 1: ./create_readonly_user_pg.sh -n <hostname> -p <port> -u <Db owner> -r <rolename> -s <schema name> -d <DB name>
 	EXAMPLE 2: ./create_readonly_user_pg.sh -n 127.0.0.1 -p 5432 -u dbuser -r readonly -s public -d dbname
-	EXAMPLE 3: ./create_readonly_user_pg.sh -r readonly -d dbname
+	EXAMPLE 3: ./create_readonly_user_pg.sh -r readonly -d dbname -w password
 
 	EOF
 }
+
+
 
 create_user() {
 	local cmd=$1
@@ -39,7 +42,7 @@ ROLE=''
 SCHEMA='public'
 PORT='5432'
 USERNAME=${OPTARG:-postgres}
-while getopts "hd:u:r:s:n:p:" OPTION; do
+while getopts "hd:u:r:s:n:p:w:" OPTION; do
 	case $OPTION in
 		h)
 			usage
@@ -63,13 +66,17 @@ while getopts "hd:u:r:s:n:p:" OPTION; do
 		 p)
 		 	PORT=$OPTARG
 		 	;;
+		 w)
+		 	PASSWORD=$OPTARG
+		 	;;
 	esac
 done
 
-if [[ -z "$DB_NAME" ]] || [[ -z "$USERNAME" ]] || [[ -z "$ROLE" ]] || [[ -z "$HOST_NAME" ]] || [[ -z "$PORT" ]]; then
+if [[ -z "$DB_NAME" ]] || [[ -z "$USERNAME" ]] || [[ -z "$ROLE" ]] || [[ -z "$HOST_NAME" ]] || [[ -z "$PORT" ]] | [[ -z "$PASSWORD" ]]; then
 	usage
 	exit 1
 fi
+
 
 
 # A function to draw a line to help highlight a message when you call this with an
@@ -104,14 +111,17 @@ call_drawline () {
 
 echo " "
 echo " "
-call_drawline "Creating ReadOnly User"
+call_drawline "Creating ReadOnly User : $ROLE"
 
-echo " User    : $ROLE "
-echo " DataBase: $DB_NAME "
+# echo " User    : $ROLE "
+echo " Database: $DB_NAME "
+echo " Hostname: $HOST_NAME "
 
 echo "--------------------------------------------- "
 echo " "
 echo " "
+
+
 
 exec_create_user () {
  create_user "CREATE USER $ROLE with PASSWORD '$PASSWORD';"

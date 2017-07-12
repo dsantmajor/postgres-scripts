@@ -102,13 +102,14 @@ call_drawline () {
 
 echo " "
 echo " "
-call_drawline "Granting ReadOnly privileges"
+call_drawline "Granting ReadOnly privileges for User : $ROLE  "
 
-echo " User    : $ROLE "
-echo " DataBase: $DB_NAME "
+# echo " User    : $ROLE "
+echo " Database: $DB_NAME "
 echo " Schema  : $SCHEMA "
+echo " Hostname: $HOST_NAME "
 
-echo "--------------------------------------------- "
+echo "----------------------------------------------------------"
 echo " "
 echo " "
 
@@ -130,10 +131,3 @@ while true; do
         * ) echo "Please answer yes or no.";;
     esac
 done
-
-
-
-# Uncomment to also grant privileges on all functions/procedures in the schema.
-# It's usually NOT what you want - functions can modify data!
-#pgexec "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA ${SCHEMA} TO ${ROLE};
-#ALTER DEFAULT PRIVILEGES IN SCHEMA ${SCHEMA} GRANT EXECUTE ON FUNCTIONS TO ${ROLE};"
